@@ -43,7 +43,6 @@ Route::middleware('auth')->group(function () {
 
     
     Route::get('/checkout', CheckoutPage::class)->name('checkout');
-    Route::get('/payment', PaymentPage::class)->name('payment');
     // Route::get('/payment', function () {
     //     return view('payment');
     // })->name('payment');

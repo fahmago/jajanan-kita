@@ -121,25 +121,17 @@ class CheckoutPage extends Component
 
             try {
                 $this->snapToken = Snap::getSnapToken($payload);
-                session(['snapToken' => $this->snapToken]);
-                return redirect()->route('payment'); // Redirect ke Payment Page
+                $this->dispatch('initiate-payment', token: $this->snapToken);
                 CartManagement::clearCartItems();
             } catch (\Exception $e) {
                 Log::error('Failed to generate Snap Token:', ['error' => $e->getMessage()]);
                 session()->flash('error', 'Gagal mendapatkan Snap Token. Silakan coba lagi.');
-                return redirect()->route('checkout');
             }
         } else {
             // Kosongkan keranjang
-            return redirect()->route('success'); // Redirect ke Halaman Sukses
             CartManagement::clearCartItems();
+            return redirect()->route('success'); // Redirect ke Halaman Sukses
         }
-
-        $order->save();
-        $address->order_id = $order->id;
-        $address->save();
-        $order->items()->createMany($cart_items);
-        CartManagement::clearCartItems();
     }
     public function render()
     {

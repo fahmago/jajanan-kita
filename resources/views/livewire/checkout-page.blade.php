@@ -238,65 +238,29 @@
 </div>
 
 
-
-{{-- <script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ env('services.midtrans.clientKey') }}">
-</script>
+@push('scripts')
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
 <script>
-	document.getElementById('pay-button').addEventListener('click', function () {
-        // Ambil payment_method dari Livewire
-        var paymentMethod = @this.payment_method;
-
-        if (paymentMethod === 'cod') {
-            // Jika COD, submit form atau lakukan logika langsung
-            @this.placeOrder();
-        } else if (paymentMethod === 'midtrans') {
-            // Jika E-Payment, gunakan Midtrans Snap
-            var snapToken = "{{ session('snapToken') ?? '' }}"; // Snap Token dari backend
-            if (!snapToken) {
-                alert('Snap Token tidak ditemukan!');
-                return;
-            }
-
-            window.snap.pay(snapToken, {
-                onSuccess: function (result) {
+	document.addEventListener('livewire:initialized', () => {
+        @this.on('initiate-payment', (event) => {
+            const token = event.token;
+            snap.pay(token, {
+                onSuccess: function(result) {
                     console.log(result);
-                    window.location.href = "{{ route('success') }}";
+                    window.location.href = "/success";
                 },
-                onPending: function (result) {
+                onPending: function(result) {
                     console.log(result);
-                    alert('Payment is pending');
+                    alert('Payment Pending!');
+                    window.location.href = "/my-orders";
                 },
-                onError: function (result) {
-                    console.error(result);
-                    alert('Payment failed');
-					window.location.href = "{{ route('cancel') }}";
+                onError: function(result) {
+                    console.log(result);
+                    alert('Payment Failed!');
+                    window.location.href = "/cancel";
                 }
             });
-        } else {
-            alert('Silakan pilih metode pembayaran terlebih dahulu.');
-        }
-    });
-</script> --}}
-{{-- @push('scripts')
-<script>
-	window.livewire.on('initiatePayment', function (snapToken) {
-        snap.pay(snapToken, {
-            onSuccess: function(result) {
-                alert('Payment Successful!');
-                console.log(result);
-                window.location.href = "/success"; // Redirect ke halaman sukses
-            },
-            onPending: function(result) {
-                alert('Payment Pending!');
-                console.log(result);
-                window.location.href = "/my-orders.show"; // Redirect ke halaman order
-            },
-            onError: function(result) {
-                alert('Payment Failed!');
-                console.log(result);
-                window.location.href = "/cancel"; // Redirect ke halaman gagal
-            }
         });
     });
 </script>
-@endpush --}}
+@endpush
